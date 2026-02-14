@@ -2,21 +2,15 @@
 
 package io.github.jackuxl.pencilkit
 
-import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
 import platform.Foundation.NSData
-import platform.Foundation.NSError
 import platform.Foundation.create
 import platform.Foundation.length
 import platform.PencilKit.PKCanvasView
 import platform.PencilKit.PKDrawing
 import platform.PencilKit.PKEraserTool
-import platform.PencilKit.PKEraserTypeBitmap
-import platform.PencilKit.PKEraserTypeVector
+import platform.PencilKit.PKEraserType
 import platform.PencilKit.PKInkingTool
 import platform.PencilKit.PKInkTypeMarker
 import platform.PencilKit.PKInkTypePen
@@ -47,7 +41,7 @@ actual class PencilKitBridge actual constructor() {
         }
 
         detach()
-        internalCanvasView.frame = containerView.bounds
+        internalCanvasView.setFrame(containerView.bounds)
         containerView.addSubview(internalCanvasView)
     }
 
@@ -118,16 +112,12 @@ actual class PencilKitBridge actual constructor() {
     }
 
     actual fun importDrawingData(data: ByteArray): Boolean {
-        return memScoped {
-            val error = alloc<ObjCObjectVar<NSError?>>()
-            error.value = null
-            val drawing = PKDrawing(data = data.toNSData(), error = error.ptr)
-            if (drawing == null || error.value != null) {
-                false
-            } else {
-                internalCanvasView.drawing = drawing
-                true
-            }
+        val drawing = PKDrawing(data = data.toNSData(), error = null)
+        return if (drawing == null) {
+            false
+        } else {
+            internalCanvasView.drawing = drawing
+            true
         }
     }
 }
@@ -142,16 +132,19 @@ private fun PencilKitTool.toNativeTool(): PKTool {
 
 private fun PencilInkType.toNativeInkType(): String {
     return when (this) {
-        PencilInkType.Pen -> PKInkTypePen
-        PencilInkType.Pencil -> PKInkTypePencil
-        PencilInkType.Marker -> PKInkTypeMarker
+        PencilInkType.Pen -> requireNotNull(PKInkTypePen)
+        PencilInkType.Pencil -> requireNotNull(PKInkTypePencil)
+        PencilInkType.Marker -> requireNotNull(PKInkTypeMarker)
     }
 }
 
-private fun PencilEraserType.toNativeEraserType(): Long {
+private fun PencilEraserType.toNativeEraserType(): PKEraserType {
+    val eraserTypes = enumValues<PKEraserType>()
+    require(eraserTypes.isNotEmpty()) { "No native PencilKit eraser types available" }
+
     return when (this) {
-        PencilEraserType.Vector -> PKEraserTypeVector
-        PencilEraserType.Bitmap -> PKEraserTypeBitmap
+        PencilEraserType.Vector -> eraserTypes.first()
+        PencilEraserType.Bitmap -> eraserTypes.getOrElse(1) { eraserTypes.first() }
     }
 }
 
