@@ -64,6 +64,36 @@ expect class PencilKitBridge() {
 
     fun setTool(tool: PencilKitTool)
 
+    fun usePenInk(
+        red: Double,
+        green: Double,
+        blue: Double,
+        alpha: Double,
+        width: Double,
+    )
+
+    fun usePencilInk(
+        red: Double,
+        green: Double,
+        blue: Double,
+        alpha: Double,
+        width: Double,
+    )
+
+    fun useMarkerInk(
+        red: Double,
+        green: Double,
+        blue: Double,
+        alpha: Double,
+        width: Double,
+    )
+
+    fun useVectorEraser()
+
+    fun useBitmapEraser()
+
+    fun useLasso()
+
     fun clear()
 
     fun setRulerActive(active: Boolean)

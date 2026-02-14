@@ -16,6 +16,7 @@ Kotlin Multiplatform bridge for iPadOS [PencilKit](https://developer.apple.com/d
 - `PencilKitTool` (`Ink`, `Eraser`, `Lasso`)
 - `PencilInkType`, `PencilEraserType`
 - `PencilColor`
+- Swift-friendly bridge helpers: `usePenInk/usePencilInk/useMarkerInk/useVectorEraser/useBitmapEraser/useLasso`
 
 ## iPadOS usage example
 
@@ -45,3 +46,14 @@ bridge.importDrawingData(bytes)
 ```bash
 ./gradlew :pencilkit-bridge:assemble
 ```
+
+## Demo app
+
+An iPadOS SwiftUI demo app is available in [`demo-ios`](./demo-ios).
+
+```bash
+cd demo-ios
+./generate-project.sh
+```
+
+Then open `demo-ios/PencilKitBridgeDemo.xcodeproj` in Xcode and run on an iPad simulator/device.

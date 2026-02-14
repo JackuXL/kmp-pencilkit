@@ -1,0 +1,42 @@
+name: PencilKitBridgeDemo
+options:
+  minimumXcodeGenVersion: 2.37.0
+  deploymentTarget:
+    iOS: "16.0"
+configs:
+  Debug: debug
+  Release: release
+targets:
+  PencilKitBridgeDemo:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.jackuxl.PencilKitBridgeDemo
+        PRODUCT_NAME: PencilKitBridgeDemo
+        SWIFT_VERSION: 5.9
+        TARGETED_DEVICE_FAMILY: "2"
+        INFOPLIST_FILE: Sources/Info.plist
+        FRAMEWORK_SEARCH_PATHS:
+          - "$(inherited)"
+          - "$(SRCROOT)/../pencilkit-bridge/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"
+    dependencies:
+      - framework: "$(SRCROOT)/../pencilkit-bridge/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)/PencilKitBridge.framework"
+        embed: true
+        codeSign: false
+    preBuildScripts:
+      - name: Build KMP framework for Xcode
+        basedOnDependencyAnalysis: false
+        script: |-
+          set -euo pipefail
+          cd "$SRCROOT/.."
+          ./gradlew :pencilkit-bridge:embedAndSignAppleFrameworkForXcode
+schemes:
+  PencilKitBridgeDemo:
+    build:
+      targets:
+        PencilKitBridgeDemo: all
+    run:
+      config: Debug

@@ -59,6 +59,48 @@ actual class PencilKitBridge actual constructor() {
         internalCanvasView.tool = tool.toNativeTool()
     }
 
+    actual fun usePenInk(red: Double, green: Double, blue: Double, alpha: Double, width: Double) {
+        setTool(
+            PencilKitTool.Ink(
+                type = PencilInkType.Pen,
+                color = PencilColor(red = red, green = green, blue = blue, alpha = alpha),
+                width = width,
+            ),
+        )
+    }
+
+    actual fun usePencilInk(red: Double, green: Double, blue: Double, alpha: Double, width: Double) {
+        setTool(
+            PencilKitTool.Ink(
+                type = PencilInkType.Pencil,
+                color = PencilColor(red = red, green = green, blue = blue, alpha = alpha),
+                width = width,
+            ),
+        )
+    }
+
+    actual fun useMarkerInk(red: Double, green: Double, blue: Double, alpha: Double, width: Double) {
+        setTool(
+            PencilKitTool.Ink(
+                type = PencilInkType.Marker,
+                color = PencilColor(red = red, green = green, blue = blue, alpha = alpha),
+                width = width,
+            ),
+        )
+    }
+
+    actual fun useVectorEraser() {
+        setTool(PencilKitTool.Eraser(PencilEraserType.Vector))
+    }
+
+    actual fun useBitmapEraser() {
+        setTool(PencilKitTool.Eraser(PencilEraserType.Bitmap))
+    }
+
+    actual fun useLasso() {
+        setTool(PencilKitTool.Lasso)
+    }
+
     actual fun clear() {
         internalCanvasView.drawing = PKDrawing()
     }
