@@ -1,4 +1,7 @@
+import Foundation
 import SwiftUI
+import PhotosUI
+import UIKit
 
 struct ContentView: View {
     @StateObject private var model = DemoCanvasModel()
@@ -6,10 +9,12 @@ struct ContentView: View {
     @State private var strokeWidth: Double = 6.0
     @State private var drawingEnabled = true
     @State private var rulerEnabled = false
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var backgroundImage: UIImage?
 
     var body: some View {
         VStack(spacing: 12) {
-            PencilCanvasHostView(bridge: model.bridge)
+            PencilCanvasHostView(bridge: model.bridge, backgroundImage: backgroundImage)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
@@ -27,6 +32,11 @@ struct ContentView: View {
             model.activate(tool: selectedTool, width: strokeWidth)
             model.setDrawingEnabled(drawingEnabled)
             model.setRulerActive(rulerEnabled)
+        }
+        .onChange(of: selectedPhotoItem) { item in
+            Task {
+                await loadSelectedBackgroundImage(from: item)
+            }
         }
     }
 
@@ -64,6 +74,19 @@ struct ContentView: View {
             }
 
             HStack {
+                PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                    Label("Select Background", systemImage: "photo")
+                }
+                .buttonStyle(.bordered)
+
+                if backgroundImage != nil {
+                    Button("Remove Background") {
+                        backgroundImage = nil
+                        selectedPhotoItem = nil
+                    }
+                    .buttonStyle(.bordered)
+                }
+
                 Spacer()
                 Button("Clear Canvas") {
                     model.clear()
@@ -71,6 +94,20 @@ struct ContentView: View {
                 .buttonStyle(.borderedProminent)
             }
         }
+    }
+
+    @MainActor
+    private func loadSelectedBackgroundImage(from item: PhotosPickerItem?) async {
+        guard let item else {
+            return
+        }
+
+        guard let imageData = try? await item.loadTransferable(type: Data.self),
+              let image = UIImage(data: imageData) else {
+            return
+        }
+
+        backgroundImage = image
     }
 }
 

@@ -57,3 +57,5 @@ cd demo-ios
 ```
 
 Then open `demo-ios/PencilKitBridgeDemo.xcodeproj` in Xcode and run on an iPad simulator/device.
+
+The demo supports choosing a photo as canvas background (`Select Background`) and removing it (`Remove Background`).

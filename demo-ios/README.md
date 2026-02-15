@@ -27,3 +27,9 @@ The target has a pre-build script that runs:
 ```
 
 So the latest Kotlin framework is always used by the demo app.
+
+## Background image testing
+
+Inside the demo app, tap **Select Background** to pick an image from the photo library.
+The selected image becomes the canvas background, and PencilKit strokes are drawn on top.
+Tap **Remove Background** to reset to the default background.
